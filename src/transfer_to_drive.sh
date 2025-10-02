@@ -29,14 +29,6 @@ handle_file_transfer() {
   if test ! -d src/genre_file_list_names/${date_string}; then 
     mkdir -p src/genre_file_list_names/${date_string}
   fi
-
-  if test -z "$(ls "$genre_dir_path"/*)";then
-    echo "directory: $genre_dir_path, is empty"
-  else 
-    find "$genre_dir_path"/* -exec basename {} ";" >> src/genre_file_list_names/${date_string}/$file_genre_name 
-    echo "moving files to storage"
-    mv "$genre_dir_path"/* "$target_drive_path"/file_collection/mp3-files/${date_string}/${genre_name}
-  fi
    # TODO: plan --- generating hard links will be dependent on file_genre_name; it will scan the content for the target files that need to linked to the appropriate genre. It will compare its contents to the current files in the mp3-files/date_string/genre_name.
    # For every hit, it will link the file to the genre directory. Once the link operation is complete, it will perform clean up and delete the file
   find "$genre_dir_path"/* -exec basename {} ";" >> $genre_file_name_path
@@ -45,17 +37,22 @@ handle_file_transfer() {
 }
 generate_hard_links() {
   local drive_base_path=$1
-  local target_genre_dir=$2
-  local genre_song_file=$3
+  local genre_name=$2
+  local target_genre_dir="${drive_base_path}/Djkit/${genre_name}"
+  local source_genre_dir="${drive_base_path}/file_collection/mp3-files/${date_string}/${genre_name}"
+  readarray -t music_file_link_targets < $genre_file_name_path
 
-  if test ! -d "$drive_base_path"/Djkit/"$target_genre_dir";then
-    mkdir -p "$drive_base_path"/Djkit/"$target_genre_dir"
+  if test ! -d $target_genre_dir;then
+    mkdir -p $target_genre_dir
   fi
-  while read -r line;do
-    ln "$drive_base_path"/file_collection/mp3-files/"$line" "$drive_base_path"/Djkit/"$target_genre_dir"
-  done < "$genre_song_file"
-  echo "Moved to ${target_genre_dir}:"
-  find "$drive_base_path"/Djkit/"$target_genre_dir" -maxdepth 0 -atime -1d
+  if test "${music_file_link_targets[@]}";then
+  echo "Number of songs to be linked into ${target_genre_dir}: ${#music_file_link_targets[@]}"
+  for file in "${music_file_link_targets[@]}";do
+    ln ${source_genre_dir}/${file} $target_genre_dir
+  done
+  echo "Number of songs linked in the last 24hrs: $(find "$drive_base_path"/Djkit/"$genre_name" -maxdepth 0 -atime -1d | wc -l)"
+  rm $genre_file_name_path
+  fi
 }
 handle_dir_targeting() {
   local local_storage_path=$1
