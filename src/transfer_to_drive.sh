@@ -54,9 +54,13 @@ generate_hard_links() {
   rm $genre_file_name_path
   fi
 }
-handle_dir_targeting() {
-  local local_storage_path=$1
-  local target_storage_path=$2
+
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+  if test "$target_drive_path" == "/Volumes/T7" && test ! -d /Volumes/T7; then
+    fail "hard drive T7 is not connected" 2
+  fi
+  local local_storage_path=$local_genre_locations
+  local target_storage_path=$target_drive_path
 
   for item in $local_storage_path/*;do
     if [[ "$item" =~ ".sh" || "$item" =~ "test" || "$item" == "my_script" ]]; then
@@ -65,11 +69,4 @@ handle_dir_targeting() {
     handle_file_transfer "$item" "${target_storage_path}"
     generate_hard_links "$target_storage_path" "$target_storage_path"/../../Djkit/"$item" "$file_name"
   done
-}
-
-if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-  if test "$target_drive_path" == "/Volumes/T7" && test ! -d /Volumes/T7; then
-    fail "hard drive T7 is not connected" 2
-  fi
-  handle_dir_targeting $local_genre_locations "$target_drive_path"
 fi
