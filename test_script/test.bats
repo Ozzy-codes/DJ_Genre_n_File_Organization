@@ -56,34 +56,31 @@ teardown_file() {
     grep "$(ls "$TARGET_DIR"/file_collection/mp3-files/${date_string}/${genre_name} | head -n 1)" src/genre_file_list_names/${date_string}/${genre_name}.txt
 }
 @test "GENERATE_HARD_LINKS: function exists" {
- # test if function exists
  declare -f generate_hard_links
 }
-# @test "GENERATE_HARD_LINKS: test ln lands in the corect location" 
-#  <<- cmmt
-# - leverage the name of the txt file generated with recently uploaded file names
-# - if not created create a dir of the same name e.g."nameOfFile"
-# - find those songs in the external storage location
-# - for each one found '-exec ln {} "nameOfFile" +' 
-# ---
-# - make genre files with 'song names'
-# - put those songs in the path of $TARGET_DIR/file_collection/mp3-files
-# - run generate links arg1:music file source e.g. $TARGET_DIR/file_collection/mp3-files arg2:genre txt location
-# - does $TARGET_DIR/Djkit/$genre_file_name exist
-# - does $TARGET_DIR/Djkit/$genre_file_name have those songs
-# - are they hard links? 
-# cmmt
-# if test ! -d ${TARGET_DIR}/file_collection/mp3-files;then
-# mkdir -p ${TARGET_DIR}/file_collection/mp3-files
-# fi
-#   local genres=("konpa" "kizomba_semba" "ghetto_zouk")
-#   for genre in "${genres[@]}"; do
-#     for item in {1..3}; do
-#     echo "${genre}${item}.mp3" >> ${genre}.txt
-#   done
-# cat << eof >> kizomba.txt
-# file1.mp3
-# file2.mp3
-# file3.mp3
-# eof
-# }
+@test "GENERATE_HARD_LINKS: test ln lands in the corect location" {
+ <<- cmmt
+- leverage the name of the txt file generated with recently uploaded file names
+- if not created create a dir of the same name e.g."nameOfFile"
+- find those songs in the external storage location
+- for each one found '-exec ln {} "nameOfFile" +' 
+---
+- make genre files with 'song names'
+- put those songs in the path of $TARGET_DIR/file_collection/mp3-files/$date_string
+- run generate links arg1:music file source e.g. $TARGET_DIR/file_collection/mp3-files/$date_string arg2:genre txt location
+- does $TARGET_DIR/Djkit/$genre_file_name exist
+- does $TARGET_DIR/Djkit/$genre_file_name have those songs
+- are they hard links? 
+cmmt
+# TODO: check song txt file for songs that have already been 
+local source_dir="${TARGET_DIR}/file_collection/mp3-files/${date_string}"
+if test ! -d $source_dir;then
+mkdir -p $source_dir
+fi
+local genre="konpa"
+  for item in {1..3}; do
+    echo "${genre}${item}.mp3" >> ${source_dir}/${genre}.txt
+      done
+
+generate_hard_links $TARGET_DIR $genre 
+}
