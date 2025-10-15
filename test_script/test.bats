@@ -72,4 +72,8 @@ echo "${genre}${item}.mp3" >> src/genre_file_list_names/${genre}.txt
 generate_hard_links $TARGET_DIR $genre 
 
 test $(ls ${TARGET_DIR}/Djkit/${genre} | wc -l) -gt 1
+readarray -t inode_number < ls -l ${TARGET_DIR}/Djkit/${genre} | awk '{print $2}' | tail -n +2
+for i_number in "${inode_number[@]}";do
+test i_number -gt 1
+done
 }
