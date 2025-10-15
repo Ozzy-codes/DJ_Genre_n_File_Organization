@@ -1,0 +1,31 @@
+# Ignore build artifacts
+/dist/
+
+# Ignore temporary files
+*.tmp
+*~
+*.bak
+*.swp
+.DS_Store # macOS specific
+Thumbs.db # Windows specific
+
+# Ignore logs
+*.log
+/logs/
+
+# Ignore dependency directories
+/node_modules/
+/vendor/
+.git
+
+# Ignore IDE-specific files
+.vscode/
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Ignore sensitive information
+*.env
+.env.*
+config.local.js
