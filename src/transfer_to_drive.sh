@@ -1,7 +1,7 @@
 #!/opt/homebrew/bin/bash
 
 # first argument is the directory of which has the folders you want to extract files from e.g. the dirname which holds the name of genre directories with music files within them
-local_genre_locations="${1:-"~/Music/mp3_genres/"}"
+local_storage_path="${1:-"~/Music/mp3_genres/"}"
 # second argument is the directory of which has the folder you want to move files to e.g. the file_collection/mp3-files on an external drive that will house all music file memory nodes before creating hard links
 target_drive_path="${2:-"/Volumes/T7"}"
 date_string="$(date "+%b%d_%y_%a")"
@@ -45,7 +45,6 @@ generate_hard_links() {
   fi
   if test ${#music_file_link_targets[@]} -gt 0;then
   echo "Number of songs to be linked into ${target_genre_dir}: ${#music_file_link_targets[@]}"
-  echo "${music_file_link_targets[@]}"
   for file in "${music_file_link_targets[@]}";do
     ln ${source_genre_dir}/${file} $target_genre_dir
   done
@@ -58,14 +57,12 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
   if test "$target_drive_path" == "/Volumes/T7" && test ! -d /Volumes/T7; then
     fail "hard drive T7 is not connected" 2
   fi
-  local local_storage_path=$local_genre_locations
-  local target_storage_path=$target_drive_path
 
   for item in $local_storage_path/*;do
     if [[ "$item" =~ ".sh" || "$item" =~ "test" || "$item" == "my_script" ]]; then
       continue
     fi
-    handle_file_transfer "$item" "${target_storage_path}"
-    generate_hard_links "$target_storage_path" "$target_storage_path"/../../Djkit/"$item" "$file_name"
+    handle_file_transfer "$item" "${target_drive_path}"
+    generate_hard_links "$target_drive_path" "$target_drive_path"/../../Djkit/"$item" "$file_name"
   done
 fi
